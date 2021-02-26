@@ -1,5 +1,7 @@
 import { createContext, useState, ReactNode, useEffect} from 'react'
+import Cookies from 'js-cookie'
 import challenges from '../../challenges.json'
+import LevelUpModal from '../components/LevelUpModal';
 
 interface challenge {
     type: 'body' | 'eye';
@@ -18,30 +20,50 @@ interface challengesContextData{
     startNewChallenge: () => void;
     resetChallenge: () => void;
     completeChallenge: () => void;
+    closeLevelUpModal: () => void;
 }
 
 interface ChallengeProviderProps {
     children: ReactNode;
+    level: number;
+    currenteExperience: number;
+    challengeCompleted: number;
 }
 
 export const challengeContext = createContext({} as challengesContextData);
 
-export function Challengesprovider ({ children}: ChallengeProviderProps) {
+export function Challengesprovider ({ children, ...rest}: ChallengeProviderProps) {
 
-    const [level, setLevel] = useState(1);
-    const [currenteExperience, setCurrenteExperience] = useState(0);
-    const [challengeCompleted, setChallengeCompleted] = useState(0);
+    const [level, setLevel] = useState(rest.level ?? 1);
+    const [currenteExperience, setCurrenteExperience] = useState(rest.currenteExperience ?? 0);
+    const [challengeCompleted, setChallengeCompleted] = useState(rest.challengeCompleted ?? 0);
+
     const [activeChallenge, setActiveChallenge] = useState(null);
+    const [isLevelUpModal, setisLevelUpModal] = useState(false);
 
     const experienceToNextLevel = Math.pow((level + 1) * 4,2);
 
     /* useEffect passando array vazio será executado uma unica vez */
     useEffect(() => {
         Notification.requestPermission();
-    }, [])
+    }, []);
+
+    /* Local storage cookis installar biblioteca yarn add js-cookie e @types/js-cookie -D*/
+    useEffect(() => {
+        Cookies.set('level', String(level));
+        Cookies.set('currenteExperience', String(currenteExperience));
+        Cookies.set('challengeCompleted', String(challengeCompleted));
+    }, [level, currenteExperience, challengeCompleted]);
+
 
     const levelUp = () => {
         setLevel(level + 1);
+        setisLevelUpModal(true);
+        new Audio('/aee.mp3').play();
+    }
+
+    const closeLevelUpModal = () => {
+        setisLevelUpModal(false);
     }
 
     const startNewChallenge = () => {
@@ -92,9 +114,15 @@ export function Challengesprovider ({ children}: ChallengeProviderProps) {
             levelUp, 
             startNewChallenge, 
             resetChallenge,
-            completeChallenge
+            completeChallenge,
+            closeLevelUpModal
             }}>
         {children}
+
+        {isLevelUpModal &&
+            <LevelUpModal/>
+        }
+
         </challengeContext.Provider>  
     )
 }
