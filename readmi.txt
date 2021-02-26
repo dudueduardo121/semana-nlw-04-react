@@ -5,3 +5,5 @@ Subir aplicação vercel
 2 -- vercel login dudueduardo121@gmail.com
 
 3 -- vercel para subir a aplicação.
+
+4 -- vercel --prod para subir alguma atualização
