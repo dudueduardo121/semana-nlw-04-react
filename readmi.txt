@@ -1,0 +1,7 @@
+Subir aplicação vercel
+
+1 -- npm i -g vercel
+
+2 -- vercel login dudueduardo121@gmail.com
+
+3 -- vercel para subir a aplicação.
